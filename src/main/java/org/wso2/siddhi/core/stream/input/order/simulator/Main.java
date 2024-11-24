@@ -16,50 +16,42 @@
 
 package org.wso2.siddhi.core.stream.input.order.simulator;
 
+import org.wso2.siddhi.core.stream.input.order.simulator.threads.EDGARDataLoaderThread;
 import org.wso2.siddhi.core.stream.input.order.simulator.threads.DEBS2013DataLoderThread;
 import org.wso2.siddhi.core.stream.input.order.simulator.threads.DataLoaderThread;
 import org.wso2.siddhi.core.stream.input.order.simulator.threads.DataPersistor;
 import org.wso2.siddhi.core.stream.input.order.simulator.threads.GeneralDataPersistor;
 
+import java.util.ArrayList;
+
 public class Main {
 
     public static void main(String[] args) {
-        int numRecords = 1000;
-        //String inputFile = "/home/miyurud/DEBS2015/dataset/20M-dataset.csv";
-        String inputFile = "/home/miyurud/Projects/OutofOrderEvents/datasets/DEBS2013-Football-games/full-game";
-        //DataLoaderThread thrd = new DEBS2015DataLoderThread(inputFile, 1000);
-        DataLoaderThread thrd = new DEBS2013DataLoderThread(inputFile, numRecords, 0);
-        OOSimulator simulator = new OOSimulator(thrd, 5);
-        DataPersistor persistor = new GeneralDataPersistor("/home/miyurud/Projects/OutofOrderEvents/datasets/synthesized_data/test1.csv");
-        simulator.init();
+        int numRecords = 100000;
+        // String inputFile = "/home/miyurud/DEBS2015/dataset/20M-dataset.csv";
+        String inputFile = "/media/miyurud/OS/Data/log20240101.csv";
 
+        DataLoaderThread thrd = new EDGARDataLoaderThread(inputFile, numRecords);
+        DataPersistor persistor = new GeneralDataPersistor("/home/miyurud/data/test2.csv");
+
+        OOSimulator simulator = new OOSimulator(thrd, 5);
+        simulator.init();
         simulator.setRunOO();
 
-        for(int i = 0; i < numRecords; i++){
+        for (int i = 0; i < numRecords; i++) {
             persistor.persistEvent(simulator.getNextEvent());
         }
 
-        persistor.close();
+        // Data Sorter
+        // thrd.run();
+        // DataSorter sorter = new DataSorter(thrd);
+        // sorter.init();
+        // ArrayList<Object[]> sortedItems = sorter.sort();
+        //
+        // for (int i = 0; i < numRecords; i++) {
+        // persistor.persistEvent(sortedItems.get(i));
+        // }
 
-//        System.out.println(simulator.getNextEvent()[0]);
-//        System.out.println(simulator.getNextEvent()[0]);
-//        System.out.println(simulator.getNextEvent()[0]);
-//        System.out.println(simulator.getNextEvent()[0]);
-//        System.out.println(simulator.getNextEvent()[0]);
-//        System.out.println(simulator.getNextEvent()[0]);
-//        System.out.println(simulator.getNextEvent()[0]);
-//        System.out.println(simulator.getNextEvent()[0]);
-//        System.out.println(simulator.getNextEvent()[0]);
-//        System.out.println(simulator.getNextEvent()[0]);
-//        System.out.println(simulator.getNextEvent()[0]);
-//        System.out.println(simulator.getNextEvent()[0]);
-//        System.out.println(simulator.getNextEvent()[0]);
-//        System.out.println(simulator.getNextEvent()[0]);
-//        System.out.println(simulator.getNextEvent()[0]);
-//        System.out.println(simulator.getNextEvent()[0]);
-//        System.out.println(simulator.getNextEvent()[0]);
-//        System.out.println(simulator.getNextEvent()[0]);
-//        System.out.println(simulator.getNextEvent()[0]);
-//        System.out.println(simulator.getNextEvent()[0]);
+        persistor.close();
     }
 }
